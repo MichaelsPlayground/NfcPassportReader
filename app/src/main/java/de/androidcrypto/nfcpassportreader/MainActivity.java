@@ -21,6 +21,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import net.sf.scuba.smartcards.CardFileInputStream;
 import net.sf.scuba.smartcards.CardService;
@@ -33,11 +36,14 @@ import org.jmrtd.lds.DisplayedImageInfo;
 import org.jmrtd.lds.PACEInfo;
 import org.jmrtd.lds.SecurityInfo;
 import org.jmrtd.lds.icao.DG11File;
+import org.jmrtd.lds.icao.DG12File;
 import org.jmrtd.lds.icao.DG15File;
 import org.jmrtd.lds.icao.DG1File;
 import org.jmrtd.lds.icao.DG2File;
 import org.jmrtd.lds.icao.DG3File;
+import org.jmrtd.lds.icao.DG4File;
 import org.jmrtd.lds.icao.DG5File;
+import org.jmrtd.lds.icao.DG6File;
 import org.jmrtd.lds.icao.DG7File;
 import org.jmrtd.lds.icao.MRZInfo;
 import org.jmrtd.lds.iso19794.FaceImageInfo;
@@ -102,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                         passBirthDate,
                         passExpirationDate
                 );
+                Snackbar snackbar = Snackbar.make(view, "The passport data are saved.", Snackbar.LENGTH_LONG);
+                snackbar.setBackgroundTint(ContextCompat.getColor(view.getContext(), R.color.green));
+                snackbar.show();
             }
         });
 
@@ -382,6 +391,21 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     result += "DG11File not available (Additional Details)" + "\n";
                 }
 
+                // -- Additional Details (if exist) like issuing authority -- //
+                String issuingAuthority = "";
+                String dateOfIssue = "";
+                String dateOfPersonalization = "";
+                try {
+                    CardFileInputStream dg12In = service.getInputStream(PassportService.EF_DG12, DEFAULT_MAX_BLOCKSIZE);
+                    DG12File dg12File = new DG12File(dg12In);
+                    issuingAuthority = dg12File.getIssuingAuthority();
+                    dateOfIssue = dg12File.getDateOfIssue();
+                    dateOfPersonalization = dg12File.getDateAndTimeOfPersonalization();
+                } catch (Exception e) {
+                    Log.w(TAG, e);
+                    result += "DG12File not available (Additional Data)" + "\n";
+                }
+
                 // -- Document Public Key -- //
                 try {
                     CardFileInputStream dg15In = service.getInputStream(PassportService.EF_DG15, DEFAULT_MAX_BLOCKSIZE);
@@ -412,8 +436,10 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             result += "DOC TYPE: " + eDocument.getDocType().name() + "\n";
             result += "ISSUER AUTHORITY: " + eDocument.getPersonDetails().getIssuerAuthority().replace("<", " ").trim() + "\n";
 
-            Bitmap image = ImageUtil.scaleImage(eDocument.getPersonDetails().getFaceImage());
-            //ivPhoto.setImageBitmap(image);
+            // here we are using the real image and not the scaled one
+            Bitmap fullSizeImage = eDocument.getPersonDetails().getFaceImage();
+            //result += "IMAGE FULL SIZE WIDTH: " + fullSizeImage.getWidth() + " HEIGHT: " + fullSizeImage.getHeight() + "\n";
+            //Bitmap image = ImageUtil.scaleImage(eDocument.getPersonDetails().getFaceImage());
 
             String finalIdContentString = result;
             runOnUiThread(new Runnable() {
@@ -421,7 +447,8 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 public void run() {
                     //UI related things, not important for NFC
                     nfcaContent.setText(finalIdContentString);
-                    ivPhoto.setImageBitmap(image);
+                    //ivPhoto.setImageBitmap(image);
+                    ivPhoto.setImageBitmap(fullSizeImage);
                     pbNfcReading.setVisibility(View.GONE);
                     tvPbNfcReading.setVisibility(View.GONE);
                 }

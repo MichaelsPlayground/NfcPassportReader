@@ -19,7 +19,7 @@
             android:padding="10dp"
             android:text="This app shows how to read an ePassport via NFC. To access the data you need to provide 3 data fields."
             android:textAlignment="center"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
