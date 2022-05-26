@@ -38,9 +38,6 @@ import java.io.OutputStream;
 import jj2000.j2k.decoder.Decoder;
 import jj2000.j2k.util.ParameterList;
 
-//import jj2000.j2k.decoder.Decoder;
-//import jj2000.j2k.util.ParameterList;
-
 public class ImageUtil {
     // https://github.com/alimertozdemir/EPassportNFCReader/blob/master/app/src/main/java/com/alimert/passportreader/util/ImageUtil.java
     public static Image getImage(Context context, AbstractImageInfo imageInfo) {

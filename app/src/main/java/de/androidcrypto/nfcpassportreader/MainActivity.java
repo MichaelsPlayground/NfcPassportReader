@@ -54,7 +54,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback{
 
     EditText passportNumber, birthDate, expirationDate;
-    Button savePassportData, loadPassportData;
+    Button savePassportData, loadPassportData, clearPassportData;
     TextView nfcaContent;
     private ImageView ivPhoto;
     ProgressBar pbNfcReading;
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         expirationDate = findViewById(R.id.etPassportExpiration);
         savePassportData = findViewById(R.id.btnSavePassportData);
         loadPassportData = findViewById(R.id.btnLoadPassportData);
+        clearPassportData = findViewById(R.id.btnClearPassportData);
         // init encrypted shared preferences
         EncryptedSharedPreferencesUtils.setupEncryptedSharedPreferences(getApplicationContext());
 
@@ -110,6 +111,15 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 passportNumber.setText(EncryptedSharedPreferencesUtils.loadPassportNumber());
                 birthDate.setText(EncryptedSharedPreferencesUtils.loadPassportBirthDate());
                 expirationDate.setText(EncryptedSharedPreferencesUtils.loadPassportExpirationDate());
+            }
+        });
+
+        clearPassportData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                passportNumber.setText("");
+                birthDate.setText("");
+                expirationDate.setText("");
             }
         });
     }
@@ -162,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         try {
             isoDep = IsoDep.get(tag);
             if (isoDep != null) {
-
                 if (Build.VERSION.SDK_INT >= 26) {
                     ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150,10));
                 } else {
@@ -219,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     //System.out.println("cardSecurityFile: " + cardSecurityFile.toString() + " #: " + cardSecurityFile.getSecurityInfos().toArray().toString());
                     //Collection<SecurityInfo> securityInfoCollection = cardSecurityFile.getSecurityInfos();
 
-                    CardAccessFile cardAccessFile = new CardAccessFile(service.getInputStream(PassportService.EF_CARD_ACCESS));
+                    CardAccessFile cardAccessFile = new CardAccessFile(service.getInputStream(PassportService.EF_CARD_ACCESS, DEFAULT_MAX_BLOCKSIZE));
                     Collection<SecurityInfo> securityInfoCollection = cardAccessFile.getSecurityInfos();
 
                     for (SecurityInfo securityInfo : securityInfoCollection) {
@@ -247,14 +256,14 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 if (!paceSucceeded) {
                     try {
-                        service.getInputStream(PassportService.EF_COM).read();
+                        service.getInputStream(PassportService.EF_COM, DEFAULT_MAX_BLOCKSIZE).read();
                     } catch (Exception e) {
                         service.doBAC(bacKey);
                     }
                 }
 
                 // -- Personal Details -- //
-                CardFileInputStream dg1In = service.getInputStream(PassportService.EF_DG1);
+                CardFileInputStream dg1In = service.getInputStream(PassportService.EF_DG1, DEFAULT_MAX_BLOCKSIZE);
                 DG1File dg1File = new DG1File(dg1In);
 
                 MRZInfo mrzInfo = dg1File.getMRZInfo();
@@ -275,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 }
 
                 // -- Face Image -- //
-                CardFileInputStream dg2In = service.getInputStream(PassportService.EF_DG2);
+                CardFileInputStream dg2In = service.getInputStream(PassportService.EF_DG2, DEFAULT_MAX_BLOCKSIZE);
                 DG2File dg2File = new DG2File(dg2In);
                 List<FaceInfo> faceInfos = dg2File.getFaceInfos();
                 List<FaceImageInfo> allFaceImageInfos = new ArrayList<>();
@@ -291,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 // -- Fingerprint (if exist)-- //
                 try {
-                    CardFileInputStream dg3In = service.getInputStream(PassportService.EF_DG3);
+                    CardFileInputStream dg3In = service.getInputStream(PassportService.EF_DG3, DEFAULT_MAX_BLOCKSIZE);
                     DG3File dg3File = new DG3File(dg3In);
                     List<FingerInfo> fingerInfos = dg3File.getFingerInfos();
                     List<FingerImageInfo> allFingerImageInfos = new ArrayList<>();
@@ -313,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 // -- Portrait Picture -- //
                 try {
-                    CardFileInputStream dg5In = service.getInputStream(PassportService.EF_DG5);
+                    CardFileInputStream dg5In = service.getInputStream(PassportService.EF_DG5, DEFAULT_MAX_BLOCKSIZE);
                     DG5File dg5File = new DG5File(dg5In);
 
                     List<DisplayedImageInfo> displayedImageInfos = dg5File.getImages();
@@ -330,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 // -- Signature (if exist) -- //
                 try {
-                    CardFileInputStream dg7In = service.getInputStream(PassportService.EF_DG7);
+                    CardFileInputStream dg7In = service.getInputStream(PassportService.EF_DG7, DEFAULT_MAX_BLOCKSIZE);
                     DG7File dg7File = new DG7File(dg7In);
 
                     List<DisplayedImageInfo> signatureImageInfos = dg7File.getImages();
@@ -348,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 // -- Additional Details (if exist) -- //
                 try {
-                    CardFileInputStream dg11In = service.getInputStream(PassportService.EF_DG11);
+                    CardFileInputStream dg11In = service.getInputStream(PassportService.EF_DG11, DEFAULT_MAX_BLOCKSIZE);
                     DG11File dg11File = new DG11File(dg11In);
 
                     if(dg11File.getLength() > 0) {
@@ -375,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 // -- Document Public Key -- //
                 try {
-                    CardFileInputStream dg15In = service.getInputStream(PassportService.EF_DG15);
+                    CardFileInputStream dg15In = service.getInputStream(PassportService.EF_DG15, DEFAULT_MAX_BLOCKSIZE);
                     DG15File dg15File = new DG15File(dg15In);
                     PublicKey publicKey = dg15File.getPublicKey();
                     eDocument.setDocPublicKey(publicKey);
@@ -429,23 +438,10 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             //Trying to catch any exception that may be thrown
             e.printStackTrace();
         }
-
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
-    }
-
-    public static String prettyPrintCardNumber(String cardNumber) {
-        if (cardNumber == null) return null;
-        char delimiter = ' ';
-        return cardNumber.replaceAll(".{4}(?!$)", "$0" + delimiter);
-    }
-
-    public static String bytesToHex(byte[] bytes) {
-        StringBuffer result = new StringBuffer();
-        for (byte b : bytes) result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
-        return result.toString();
     }
 }

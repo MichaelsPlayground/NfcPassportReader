@@ -42,7 +42,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="enter the passport number in CAPITIAL letters"
+            android:text="enter the passport number in CAPITAL letters"
             android:textAlignment="center" />
 
         <EditText
@@ -121,18 +121,26 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/btnClearPassportData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="clear" />
+
+            <Button
                 android:id="@+id/btnLoadPassportData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
                 android:text="load data" />
 
             <Button
                 android:id="@+id/btnSavePassportData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:text="save data" />
+                android:layout_marginStart="4dp"
+                android:text="save" />
 
         </LinearLayout>
 
@@ -170,7 +178,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:hint="the EMV card data comes here"
+            android:hint="the passport data comes here"
             android:textSize="18sp" />
 
 
