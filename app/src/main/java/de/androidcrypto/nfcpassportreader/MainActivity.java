@@ -57,7 +57,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback{
+public class MainActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback {
 
     EditText passportNumber, birthDate, expirationDate;
     Button savePassportData, loadPassportData, clearPassportData;
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             isoDep = IsoDep.get(tag);
             if (isoDep != null) {
                 if (Build.VERSION.SDK_INT >= 26) {
-                    ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150,10));
+                    ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(150, 10));
                 } else {
                     ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(150);
                 }
@@ -202,11 +202,12 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             String result = "Content of ISO-DEP tag\n";
 
             try {
-            bacKey = new BACKey(
-                    passportNumber.getText().toString(),
-                    birthDate.getText().toString(),
-                    expirationDate.getText().toString()
-            ); } catch (IllegalArgumentException e) {
+                bacKey = new BACKey(
+                        passportNumber.getText().toString(),
+                        birthDate.getText().toString(),
+                        expirationDate.getText().toString()
+                );
+            } catch (IllegalArgumentException e) {
                 Log.w(TAG, e);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -286,9 +287,9 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 personDetails.setNationality(mrzInfo.getNationality());
                 personDetails.setIssuerAuthority(mrzInfo.getIssuingState());
 
-                if("I".equals(mrzInfo.getDocumentCode())) {
+                if ("I".equals(mrzInfo.getDocumentCode())) {
                     docType = DocType.ID_CARD;
-                } else if("P".equals(mrzInfo.getDocumentCode())) {
+                } else if ("P".equals(mrzInfo.getDocumentCode())) {
                     docType = DocType.PASSPORT;
                 }
 
@@ -318,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     }
                     List<Bitmap> fingerprintsImage = new ArrayList<>();
                     if (!allFingerImageInfos.isEmpty()) {
-                        for(FingerImageInfo fingerImageInfo : allFingerImageInfos) {
+                        for (FingerImageInfo fingerImageInfo : allFingerImageInfos) {
                             Image image = ImageUtil.getImage(MainActivity.this, fingerImageInfo);
                             fingerprintsImage.add(image.getBitmapImage());
                         }
@@ -369,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     CardFileInputStream dg11In = service.getInputStream(PassportService.EF_DG11, DEFAULT_MAX_BLOCKSIZE);
                     DG11File dg11File = new DG11File(dg11In);
 
-                    if(dg11File.getLength() > 0) {
+                    if (dg11File.getLength() > 0) {
                         additionalPersonDetails.setCustodyInformation(dg11File.getCustodyInformation());
                         additionalPersonDetails.setNameOfHolder(dg11File.getNameOfHolder());
                         additionalPersonDetails.setFullDateOfBirth(dg11File.getFullDateOfBirth());
