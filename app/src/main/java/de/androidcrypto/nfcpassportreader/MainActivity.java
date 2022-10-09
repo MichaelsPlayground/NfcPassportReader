@@ -459,13 +459,11 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             //Trying to catch any ioexception that may be thrown
             e.printStackTrace();
-        } catch (Exception e) {
-            //Trying to catch any exception that may be thrown
-            e.printStackTrace();
-        }
+        }//Trying to catch any exception that may be thrown
+
     }
 
     @Override

@@ -30,7 +30,7 @@ AsyncTask or other methods.
 // save and load passport data to Encrypted Shared Preferences
 implementation 'androidx.security:security-crypto:1.0.0'
 // https://mvnrepository.com/artifact/org.jmrtd/jmrtd
-implementation group: 'org.jmrtd', name: 'jmrtd', version: '0.7.32'
+implementation group: 'org.jmrtd', name: 'jmrtd', version: '0.7.34'
 // https://mvnrepository.com/artifact/edu.ucar/jj2000
 implementation group: 'edu.ucar', name: 'jj2000', version: '5.2'
 implementation 'com.github.mhshams:jnbis:1.1.0'
